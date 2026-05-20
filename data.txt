@@ -1,0 +1,242 @@
+An Enhanced YOLOv12 Architecture with Dual-Branch Network for Underwater Object Detection
+
+
+Al-abass D. Ibrahim
+BS in Computer Science
+University of Mindanao, 
+Davao City, 8000
+a.ibrahim.533550@umindanao.edu.ph
+
+Kristoffe Bien P. Montelibano
+BS in Computer Science
+University of Mindanao, 
+Davao City, 8000
+k.montelibano.534284@umindanao.edu.ph
+
+Aaron John I. Olanolan
+BS in Computer Science
+University of Mindanao, 
+Davao City, 8000
+a.olanolan.533790@umindanao.edu.ph
+
+
+Meljohn V. Aborde, MIT
+College of Computing Education
+University of Mindanao,
+Davao City, 8000
+mjaborde@umindanao.edu.ph
+
+
+
+Abstract
+This study proposes an enhanced YOLOv12 architecture with a Dual-Branch Input Stem for underwater object detection. Underwater environments often introduce visual challenges such as noise, blur, color distortion, and low visibility, which reduce the effectiveness of object detection models. To address this problem, the research integrates a dual-branch input design into the baseline YOLOv12 model. One branch preserves structural image features through standard convolutional layers, while the second branch applies depthwise separable convolutions for denoising and noise-resistant feature extraction. The outputs of both branches are combined through adaptive feature fusion to improve detection robustness. The study used merged underwater datasets from DUO and RF100, containing 10,000 annotated images across four object classes: echinus, holothurian, scallop, and starfish. Performance was evaluated using Precision, Recall, mAP@50, and mAP@50:95 under clean and noisy testing conditions. Results showed that the enhanced model consistently outperformed the baseline YOLOv12 model, particularly under moderate and severe noise conditions, with notable improvements in Recall and mAP metrics. These findings indicate that the enhanced architecture improves noise robustness and supports more reliable underwater object detection.
+
+CCS Concepts
+CCS → Computing methodologies → Artificial intelligence → Computer vision → Computer vision problems → Object recognition
+
+General Terms
+Algorithms, Documentation, Performance, Experimentation
+
+
+
+Keywords
+Underwater Object Detection; Noise Robustness; YOLOv12; Computer Vision; Dual-Branch Network
+
+1. INTRODUCTION
+1.1 Background Of The Study
+Many things can be seen underwater. One example is the marine living features, such as various invertebrates, including corals, seagrass, and fish, which can be observed below artificial objects and pipelines. The problem in underwater detection of objects is noise, which causes the visual quantity to be lost, resulting from the water itself and its surrounding aquatic environment. Images taken below the ocean surface have their limitations, causing the image to suffer from problems such as blurring, color distortion, and loss of essential details, making detection very challenging. These have become an issue because we all know that underwater infrastructure monitoring and marine conservation play a crucial role in protecting the environment [1].
+
+In traditional methods, surveys are conducted through manual diving, which can be hazardous and has several limitations. Detecting these objects is also challenging due to noise, such as color casts and poor visibility [2]. These challenges can lead to serious problems, including habitat damage, pollution, and effects related to climate change, which significantly impact coral reefs, coastal areas, and marine ecosystems.
+
+Issues related to lighting and color consistency persist, despite these enhancements. Studies have focused on enhancing underwater images by improving their contrast and clarity. Color and details. These will help both humans and computer systems better recognize and detect underwater objects [3]. 
+Generally, modern object detection methods can be categorized into two main categories. The first group works by first identifying possible regions of interest and classifying them, a process known as two-stage detectors. The second group includes one-stage detectors, such as YOLO (You Only Look Once), which skips the proposal step and predicts object classes and their locations in a single pass. YOLO has become quite popular because it hits a suitable balance between speed and accuracy, making it reasonable for real-world use. Over the years, YOLO models have continued to improve through upgrades in backbone architectures, enhanced multi-scale feature fusion, and more efficient prediction heads. Newer versions also include optimizations that make them more manageable to deploy in field settings, even when computing resources are limited [4]. The YOLO family of networks also has CNN-based detection models for objects and has been found to function well.
+The YOLO family has been continually evolving, and the latest, most advanced version is YOLOv12. A2 (Area Attention) and R-ELAN (Residual Efficient Layer Aggregation Networks)  are utilized on this model to enhance and improve the detection performance. It also contributed to boosting the accuracy of detection, while introducing challenges in maintaining robustness against noisy visual elements. YOLOv12 still has a limitation, which is its susceptibility to image noise in underwater images due to poor visibility and color distortion, resulting in low accuracy across all models. YOLOv'12 architecture may be robust, but it still suffers from low performance due to image noise [5][6]. The objects below the water are difficult to detect, which also restricts the effectiveness of these models, suggesting that they should have consistent performance to ensure excellent accuracy on underwater image objects. It is also noted that, although YOLOv12 is the standard due to its latest version, it still has limitations, such as reduced robustness in noisy environments. Solving this problem for enhancing stability in underwater system monitoring that detects objects underwater.
+A dual-branch network that handles noise and distorted images is a recent advancement in computer vision. It has two pathways, one for optimizing the noise suppression and the other for cleaning the features of the structure. This allows the model to seize various helpful information that can improve its quality features, even though the images of underwater scenes are noisy. The model removes noise first before undergoing the complicated feature extraction process. It also helps prevent the noise from becoming more pronounced as it blends into the background. A study has also shown that input stage adjustments are very beneficial for improving the stability of models when working with underwater images [7][8]. 
+The denoising branch uses the depthwise detachable convolutions. This is lighter and faster in filtering details. This is also very important as it splits the process into two parts: one that filters each channel separately and the other that combines the channels. The afterward will be beneficial in decreasing the handling of operations while preserving the color changes, important edges, and the pattern on the texture, which is a requirement for the accurate detection of underwater objects [7][8][9].
+A study demonstrates that it is possible to achieve strong denoising while remaining small and efficient, as noted by Sandler et al. with their lightweight CNN designs [9], which is a very suitable approach in terms of real-world underwater setups where gadgets and devices cannot handle heavy models. The Dual-Path Input Stem's integration will address the YOLOv12's issue of noise underwater by incorporating convolutions of depthwise separable filters, which is also helpful in solving the problem, as it helps reduce the model's massive computational load. This will make the detection of underwater objects easier, more practical, and stable to use.
+
+Table 1. Related Studies
+
+[5]
+An Empirical Study on the Robustness of YOLO Models for Underwater Object Detection
+Found YOLOv12 performs best overall in clean data among the YOLO series.
+YOLOv12 model performs well on clean data (77% mAP@50) but drops sharply to 29.2% when noise is introduced, exposing a substantial vulnerability to noise. This gap indicates that YOLOv12 lacks robustness against noise, highlighting the need for techniques that enhance performance in noisy underwater conditions.
+[6]
+Evaluating the Robustness of the YOLO Object Detection Algorithm in Terms of Noise
+Showed YOLO models’ accuracy decreases under Gaussian noise.
+Confirmed that YOLO (including v12) suffers from performance degradation with noisy inputs, which affects its robustness.
+
+
+[10]
+A Review of YOLOv12: Attention-Based Enhancements vs. Previous Versions
+Highlighted YOLOv12’s architectural improvements with attention modules.
+Attention-centric design introduces high computational overhead, making deployment harder in real-time scenarios.
+[11]
+YOLOv12: Attention-Centric Real-Time Object Detectors
+Introduced Area Attention (A2) and R-ELAN, improving feature learning and accuracy.
+The authors highlighted that YOLOv12x is unsuitable because it is one of the slower models in the YOLO series. It is also he higher computational cost that causes an increase in the module of attention, which they also acknowledge because it leads to inefficiency in real-time applications. 
+[12]
+YOLO Evolution: A Comprehensive Benchmark and Architectural Review of YOLOv12, YOLO11, and Their Previous Versions
+Benchmarked YOLOv12 against earlier YOLO versions; confirmed good accuracy.
+Larger YOLOv12 models exhibit slower inference times and higher GFLOPs compared to YOLOv11, which limits their efficiency.
+
+Even though the images are clear and clean, studies still show that YOLOv12 is sensitive to image noise, which is very noticeable, especially in underwater environments, where these distortions affect the edges and important details in the image. Since YOLO models rely on clear features for accurate object detection and localization, these image problems result in a significant drop in the model’s performance [5][6]. According to Nabahirwa et al. [5], although the YOLOv12 achieves 77% mAP in clean images, its performance drops to only 29% in noisy underwater conditions. This indicates that the model remains weak when applied in environments with noise or image distortion.
+The Dual-Path input stem is enhanced to eradicate the problem and issues of YOLOv12. The primary motivation for this research is to enhance the noise resilience of YoloV12. The dual-path input is used to reduce noise before extracting higher-level features, thereby avoiding further distortion and improving image quality [7][8]. In this way, an early denoising process with parallel feature pathways will create a more accurate and stable detection for objects underwater, thereby enhancing the performance of YOLOv12.
+1.2 Purpose and Description
+The purpose and description of this research is to improve the detection of the underwater object method. The latest and established detection models struggle in ambient noise, color distortion, turbidity, and low visibility below the water. The study presents an enhanced version of YOLOv12, specifically designed to perform better underwater. This model can be utilized underwater, which is beneficial for robots, marine surveys, and remotely operated vehicles, enhancing the detection of underwater objects.
+With this improved system, it will be easier to inspect damaged images and structures underwater and more consistently. This study supports the marine protection and effective monitoring, together with the SDGs Climate Action (SDG 13) and Life Below Water (SDG 14),
+1.3 Objectives
+1.3.1 General Objective
+The general objective of this study is to enhance YOLOv12’s performance as a detection model for objects underwater and to develop an improved architecture that can handle noise in underwater environments.
+
+1.3.2 Specific Objectives
+Specifically, the study aims:
+1.3.2.1 To preprocess the dataset on underwater objects, similar to the preprocessing of the baseline by applying dataset splitting and merging the dataset to make it suitable for training the model.
+1.3.2.2 To develop a new model by integrating a dual-branch input stem in the baseline model YOLOv12.
+1.3.2.3 To compare the detection performance of the baseline model and the enhanced model using the underwater object dataset in varying noise levels.
+1.3.2.4 To evaluate the enhanced model’s performance compared to the baseline by analyzing the evaluation metrics such as Precision, Recall, mAP@50, and mAP@50:95 to determine its quality in detection and noise robustness.
+
+1.4 Scope and Limitations
+Improving underwater object detection using an enhanced YOLOv12 model is the scope of this study. It aims to reduce the model’s sensitivity to noise and enhance its detection performance by adding a Dual-Branch Input Stem. The system used the  DUO and Roboflow100 (RF100) underwater datasets [13][14], which contain several underwater marine object classes, making it fit for the study's model performance evaluation 
+The limitations of this study are that it relies exclusively on DUO and Roboflow100 (RF100) underwater datasets, which are based on the anchored research. These datasets do not represent the full range of underwater environments and species. The dataset size is also modest and pre-annotated, which means that the accuracy and consistency of existing annotations are directly impacted not solely by the dataset quality model's performance. The academic time constraints limit extended investigation, large-scale testing, and comprehensive hyperparameter tuning. The real-world deployment of underwater robots, drones, or long-term monitoring platforms is beyond the current scope and is reserved for future expansion. This study is therefore restricted to evaluations based on the dataset and simulation.
+2. METHODS
+This study enhances the baseline of the YOLOv12's architecture, which improves the detection performance in underwater noise conditions by integrating and modifying the dual-branch input system. The study's methods follow a specific sequence of measures, including dataset acquisition, preprocessing, model implementation and training, and evaluation.
+2.1 Data Acquisition
+The datasets used in this study are explicitly utilized only for the detection of underwater objects. The datasets are sourced from Roboflow's DUO [13] dataset and the RF100 dataset [14]. These images have already been annotated with bounding boxes and classified into four categories: echinus, holothurian,  scallop, and starfish. Some of the images in the dataset still include multiple classes within a single image.  
+The RF100 and DUO datasets meet all the requirements of YOLOv12's input, which is also obtained from Roboflow. The images in the dataset have a fixed dimension with a uniform size of 640 × 640 pixels. To not cause confusion in the orientations of different cameras, and to ensure they are placed in the correct direction, auto orientation is included, and it is also part of the process. The images are labeled according to their class, and the dataset will be ready for the next step, such as preprocessing and training the model. This will resize of the images, correct their orientation, and add proper labels. During the training process, the labeled images will help guide the model.
+2.2 Data Preprocessing
+2.2.1 Data Splitting
+The dataset was divided into three subsets for model development and evaluation. 70% of the images were used for training, 20% for validation to monitor performance during training, and the remaining 10% for testing to evaluate the model on unseen data. This split helps ensure reliable training and unbiased performance assessment.
+
+2.2.2 Dataset Merging
+Two datasets are obtained, totaling 10,000 underwater object images. 7,780 images from the DUO dataset and 2,220 images from the RF100 dataset. There will be three parts to the data division, one comprising 7,000 images for training, another 2,000 for validation, and a third 1,000 for testing, with a 70:20:10 ratio. The merged dataset will serve as the study's primary dataset throughout the study.
+
+Table 2. Dataset Composition Summary and Class Distribution
+Dataset:
+
+Sample Size:
+Merged RF100 and DUO - 10,000 images
+
+Classes - Instances:
+Echinus - 59,632
+Holothurian - 11,852
+Scallop - 10,550
+Starfish - 20,813
+
+This study does not use any data balancing methods to ensure an accurate comparison with the baseline model. The uneven number of objects in the dataset reflects real underwater conditions, where some objects appear more often than others. The comparisons are more realistic and help evaluate the model without bias [5].
+
+2.3 Noise Simulation
+The dataset is augmented with synthetic noise to evaluate the model's robustness in the typically noisy underwater environment. Based on the baseline study, four types of noise were applied. These are: Gaussian noise, Salt-and-Pepper noise, Combined noise, and Gaussian-Diffusion noise. The most common underwater condition is simulated by introducing these types of noise. This allows the performance of the model to be studied at various noise levels.
+
+2.3.1 Gaussian Noise
+Gaussian noise represents intensity changes in pixels that are randomly distributed and follow a normal distribution.  With the noise sampled from N(0,σ2), The corrupted image can be written as:
+
+
+In this study, the gaussian noise sigma pixel is set to 10. This represents a mild level of noise. This level simulates common disturbances in underwater cameras and sensors. 
+
+2.3.2 Salt-and-Pepper Noise
+Salt-and-Pepper Noise changes some pixels to pure black (0) or pure white (255) randomly. This simulates corruption of an image or transmission errors in an image. In this study, the probability for both salt (ps) and pepper (ps) noise is set to 0.005 for a noisy test set, while 0.02 for applying noise in the train set. An image that has a total of N pixels, the number of salt and pepper pixels is:
+
+The noise is added by randomly selecting pixels in the image:
+
+2.3.3 Combined Noise
+A combined noise is added to simulate a stronger degradation. Gaussian noise is added first, followed by the Salt-and-Pepper noise. The resulting image that has combined noise is:
+
+With this combination, the simulation of complex noise underwater is enhanced, as this noise captures both impulsive artifacts and variations in intensity simultaneously.
+
+2.3.4 Gaussian-Diffusion Noise
+A Gaussian-Diffusion noise model introduces gradual corruption to an image. In the image I ∈ [0,1]H×W×C , the model applies noise for T = 3 steps using a scale of σ = 0.05 with I(0) = I: 
+
+As the image gets degraded over time, its textures and intensities begin to break down. This reveals distortions similar to those found in underwater conditions.
+
+
+
+2.4 YOLOv12 (Baseline Model)
+
+The object detection models from the YOLO lineage have made a breakthrough with YOLOv12, the latest and most advanced version of that family, yielding more precise detection through feature extraction and multi-scale fusion optimization. Additionally, the attention-driven model is well-suited for detecting small, overlapping, or visually complex objects, as it can direct its attention to the image areas that contain the most informative content.
+
+2.4.1 Principal Components
+The architecture of the YOLOv12 model is divided into three parts: the backbone, the neck, and the head.
+
+2.4.1.1 Backbone
+YOLOv12 has its backbone built around a sequence of convolutions that process the input image, while also gradually reducing spatial resolution and increasing feature depth. The first layer is a 3x3 convolutional layer with a stride of 2, which extracts basic visual patterns and generates the feature map. The next one, besides downsizing the image even further, adds new channels, which makes the network capable of learning very intricate representations.
+
+While delving deeper into the backbone, YOLOv12 employs multi-scale feature extraction with advanced modules, such as R-ELAN and Area Attention, among others. These modules lay a strong foundation for spatial and contextual understanding by not only enhancing feature representation but also enabling cross-scale fusion. The tiered processing ultimately results in the creation of three major feature maps, P3, P4, and P5, with varying resolutions for the robust detection of both small and large objects [10]. 
+
+2.4.1.2 Neck
+In YOLOv12, small, medium, and large object detection is boosted in the neck component of the model. It is formed from the multiple layers of the backbone. It works by taking feature maps from different scales, upsampling them, and then combining them. First, the highest-level feature map (P5) is upsampled using nearest-neighbor interpolation and merged with the mid-level map (P4). The merged result then goes through an R-ELAN module for refinement. This approach is repeated for the low-level feature map (P3). This fusion strategy allows the combination of the spatial information from lower layers with high-level semantic information. This results in richer and more effective feature representations.
+
+After the features are fused, the network performs the final detection step. Downsampling these features brings information from different scales, which creates a stronger object representation. At the largest scale (P5/32-large), R-ELAN is used to maintain high-resolution details while reducing computational cost. The detection layer is then presented with the maps of features that have been enhanced, which are the ones that predict the class and location of objects across all scales [10].
+
+
+2.4.1.3 Head
+The head takes feature maps generated by the neck and transforms them for final predictions. It produces the bounding box coordinates and classification scores. It applies a decoupled architecture that discriminates localization and classification via the use of light-depthwise separable convolutions, leading to the generation of three detection outputs: P3, P4, and P5, which are in charge of small, medium, and large coral detections, respectively, thus guaranteeing precise detection regardless of coral size [7][8].
+
+2.4.2 Key Features
+
+Figure 2. R-ELAN (with A2 Modules) compared with other YOLO feature fusion blocks [15]
+
+2.4.2.1 Area Attention Module
+The conventional self-attention approach is computationally expensive and struggles to perform well with high-resolution images. The A2 module (Area Attention) of YOLOv12 reduces expenses by dividing the feature maps, which are processed through simple reshaping, thereby eliminating the complexities associated with other attention techniques. This method not only provides the advantage of a wider receptive field but also faster processing, in such a way that the computational cost is reduced by almost 50%, making it possible to conduct the detection process efficiently and accurately on large-sized images [10].
+
+2.4.2.2 R-ELAN
+The feature aggregation is the core of every deep neural network's ability to share data. Earlier YOLO models depended
+on ELAN to merge features; however, it caused delays for deep models in terms of gradient behavior and in how fast they converged due to its structure, as it blocks residual connections. R-ELAN in YOLOv12 addresses this problem by introducing residual shortcuts that directly connect the input to the output. It enhances the gradient flow, training stabilization, and convergence speed without significantly increasing computation [10].
+
+
+
+2.5 Enhanced Model Framework 
+
+The enhanced model framework shows the modification of the YOLOv12 architecture. It is designed to address YOLOv12’s noise vulnerability. It involves modifying the early part of the backbone by adding a dual-branch input stem. One branch utilizes the standard convolutional blocks from YOLOv12, which extract basic visual features. On the other hand, the second branch employs depthwise separable convolutions, which comprise depthwise convolutions, batch normalization, residual skip connection, and pointwise convolutions. After extracting the features of both branches, the model combines them using adaptive feature fusion. It learns how much each branch contributes in order to produce a single feature map.
+After modifying the model, the dataset of underwater objects gathered from Roboflow, a platform widely used for computer vision dataset management and preparation, will be preprocessed and prepared for training.
+After splitting and merging the dataset and the noise application, the enhanced model is trained. The enhanced model’s performance is compared to the baseline in terms of its effectiveness in noise robustness in underwater objects by applying combined noise and diffusion noise in the test set. The evaluation metrics: Precision (P), Recall (R), mAP@50, and mAP@50:95 will be utilized.
+For the noise simulation in the train set, diffusion noise and salt-and-pepper noise are applied to the images in the train set to simulate the distortions that occur underwater. The same evaluation metrics will be used.
+
+2.5.1 Standard Branch
+The standard branch in the enhanced model is based on the original design of the baseline model. It consists of the first two convolutional blocks of YOLOv12. They focus on capturing features, such as color gradients, edges, and textures. These blocks serve as the path used for preserving the structural details of an image. The enhanced model allows clean and detailed feature extraction when these layers remain before proceeding further in the backbone.
+
+2.5.2 Denoising Branch
+The denoising branch does the feature extraction from the noisy image to describe its quality. It consists of two depthwise separable convolutions that handle the heavy image processing. The first layer of the depthwise separable convolution is the depthwise convolution. It serves as a filter that reduces the noise of an image while preserving the important details of the image simultaneously. The second layer is the pointwise convolution. It is the one that performs feature fusion and makes sure that more information remains consistent over all channels.
+
+2.5.3 Adaptive Feature Fusion
+The adaptive feature fusion fuses the outputs of the standard and denoising branches. It uses a learnable weighting procedure to do this. First, it stacks the feature maps of both branches in the channel dimension to form a combined single representation. A lightweight convolutional layer then estimates the fusion weights. After that, they are passed through a sigmoid activation function to produce values between 0 and 1. These normalized weights determine the contribution of each branch at every spatial location. Lastly, the feature maps are combined using this weighted sum, which allows the fine details of an image to remain intact while denoising. The weighted sum computation can be done by:
+
+2.6 Evaluation Metrics
+This study employs the detection metrics enhanced by Nabahirwa et al. [5] to evaluate the performance of the enhanced model in underwater object detection. To be specific, Precision, Recall, mAP@50, and mAP@50:95 are used as evaluation metrics. These are used to determine the detection performance of the model in underwater object detection.
+2.6.1 Threshold Interpretation
+To interpret the enhanced model results in evaluation, the scores are standardized using the evaluation results of Nabahirwa et al. [5] in their study. These thresholds provide interpretation for the evaluation metrics used in this study and explain how well the system performs in detecting objects in underwater conditions.
+
+Table 3. Metric Value Range Interpretation [5]
+Metric Value Range
+Interpretation
+Meaning
+≥ 0.77
+High / Excellent
+Comparable to the original data performance of YOLOv12m (mAP@50 = 0.770), indicating strong detection accuracy and robustness under ideal conditions.
+0.50 – 0.76
+Moderate / Acceptable
+Represents stable but condition-dependent performance, as observed in YOLOv12m under mild underwater distortions.
+0.30 – 0.49
+Low / Weak
+Corresponds to reduced reliability and partial misclassification, typically seen in YOLOv12m under heavy underwater noise (mAP@50 ≈ 0.292).
+< 0.30
+Poor / Unreliable
+Indicates severe degradation in detection performance, where visual distortions or noise dominate model predictions.
+
+Thus, a score of 0.77 or above is considered high efficiency for the model. This indicates that the enhanced model is comparable to the baseline model in terms of reliability in detection. However, this is only applicable to images from clean underwater conditions.
+This interpretation of the threshold is based on the work of Nabahirwa et al. [5], who found mAP@50 of 0.770 for clean datasets and a drastic drop to 0.292 when the datasets were noisy.
+Thus, this research sets 0.77 as the point of reference for the best detection performance, which guarantees that the improvements over the baseline are real and substantial, thus being suitable for the time-critical task of Underwater Object detection.
+
+2.6.2 Precision (P)
+Precision quantifies the percentage of underwater objects accurately identified among all the detections performed by the model. A high precision level signifies that the majority of the detections refer to real objects, hence reducing the number of false positives to a minimum.
+
+2.6.3 Recall (R)
+Recall shows how well the model is in classifying all underwater object instances. A high recall implies a small number of false negatives.
+
+2.6.4 Mean Average Precision at IoU = 0.50 (mAP@50)
+Mean Average Precision (mAP@50) is used to calculate the average precision across all classes in the dataset with a threshold of 0.50 IoU. It is the main metric in evaluating the detection performance of YOLO models.
+
+2.6.5 Mean Average Precision at IoU = 0.50:0.95 (mAP@50:95)
+mAP@50:95 is a stricter metric used to compute the average mAP values across the IoU thresholds that range from 0.50 to 0.95 with an interval of 0.05.
+
+
