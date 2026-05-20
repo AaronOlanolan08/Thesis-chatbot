@@ -32,7 +32,7 @@ FILE_PATH = "data.txt"
 # =========================
 # TEXT SPLIT
 # =========================
-def chunk_text(text, chunk_size=200, overlap=40):
+def chunk_text(text, chunk_size=400, overlap=80):
     words = text.split()
 
     return [
@@ -136,4 +136,4 @@ Answer clearly and based only on context.
 # RUN
 # =========================
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, port=5050)
