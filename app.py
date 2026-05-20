@@ -2,14 +2,16 @@ import os
 import faiss
 import numpy as np
 from flask import Flask, render_template, request, jsonify
+from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from groq import Groq
 
 # =========================
 # LOAD ENV
 # =========================
+load_dotenv()
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 client = Groq(api_key=GROQ_API_KEY)
 
@@ -30,7 +32,7 @@ FILE_PATH = "data.txt"
 # =========================
 # TEXT SPLIT
 # =========================
-def chunk_text(text, chunk_size=400, overlap=80):
+def chunk_text(text, chunk_size=200, overlap=40):
     words = text.split()
 
     return [
@@ -134,4 +136,4 @@ Answer clearly and based only on context.
 # RUN
 # =========================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7860)
+    app.run()
